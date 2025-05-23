@@ -2,6 +2,8 @@
 
 **Created by [RealAero](https://github.com/wrealaero)**
 
+🚀 **AeroutV4Tweaks** is a simple and powerful tool that helps your Mac run faster, smoother, and better—especially for gaming!
+
 ---
 
 ## 🌟 **What It Does**
@@ -125,7 +127,7 @@ Now you can double-click `AEROUT.command` on your desktop to run it!
 
 ## 💬 **Need Help?**
 
-If something’s not working, open an [Issue](https://github.com/wrealaero/AeroutV4Tweaks/issues) on GitHub or DM me [maybeaero]
+If something’s not working, open an [Issue](https://github.com/wrealaero/AeroutV4Tweaks/issues) on GitHub or message me! [maybeaero on DC]
 
 ---
 
