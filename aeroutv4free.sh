@@ -663,34 +663,25 @@ reset_performance() {
   fi
 }
 
+
 game_optimizer() {
   clear
   echo -e "\033[1;35m═══════════════════════════════════════════════\033[0m"
   echo -e "\033[1;36m         🎮 GAME BOOST 🎮\033[0m"
   echo -e "\033[1;35m═══════════════════════════════════════════════\033[0m"
-
-  if [ ! -d ~/Library/Application\ Support/Roblox ] && [ ! -d ~/Library/Application\ Support/Steam ]; then
-    echo -e "\033[1;31m❌ No games found!\033[0m"
-    echo -e "\033[1;33m⚠️ Install games first\033[0m"
-    sleep 2
-    main_menu
-    return
-  fi
   
-  echo -e "\033[1;34m[1] Roblox Optimizer      → Better FPS\033[0m"
-  echo -e "\033[1;33m[2] Steam Optimizer       → Steam games\033[0m"
-  echo -e "\033[1;32m[3] General Game Boost    → All games\033[0m"
-  echo -e "\033[1;31m[4] Reset Game Settings   → Back to normal\033[0m"
-  echo -e "\033[1;36m[5] Back to Menu\033[0m"
-  echo -ne "\033[1;36m👉 Pick an option (1-5): \033[0m"
+  echo -e "\033[1;34m[1] Roblox Optimizer      → Better FPS & Performance\033[0m"
+  echo -e "\033[1;33m[2] General Game Boost    → All games\033[0m"
+  echo -e "\033[1;31m[3] Reset Game Settings   → Back to normal\033[0m"
+  echo -e "\033[1;36m[4] Back to Menu\033[0m"
+  echo -ne "\033[1;36m👉 Pick an option (1-4): \033[0m"
   read -r game_choice
   
   case "$game_choice" in
     1) roblox_optimize ;;
-    2) steam_optimize ;;
-    3) general_game_boost ;;
-    4) reset_game_settings ;;
-    5) main_menu; return ;;
+    2) general_game_boost ;;
+    3) reset_game_settings ;;
+    4) main_menu; return ;;
     *) echo -e "\033[1;31m❌ Not a valid choice\033[0m"; sleep 1; game_optimizer ;;
   esac
   
@@ -701,9 +692,23 @@ game_optimizer() {
 roblox_optimize() {
   echo -e "\033[1;34m🎮 Optimizing Roblox...\033[0m"
   if confirm_action "Optimize Roblox" "Better FPS and performance"; then
+    # Install FPS Unlocker
+    echo -e "\033[1;36m⬇️ Downloading FPS Unlocker...\033[0m"
+    curl -sfLO https://github.com/wrealaero/rbxfpsunlocker-osx/raw/refs/heads/main/install_fps_unlocker || {
+      echo -e "\033[1;31m❌ Failed to download FPS Unlocker!\033[0m"
+      return 1
+    }
+    
+    chmod +x install_fps_unlocker
+    ./install_fps_unlocker || {
+      echo -e "\033[1;31m❌ Failed to install FPS Unlocker!\033[0m"
+      return 1
+    }
+    
+    # Additional Roblox optimizations
     local backup_dir="$HOME/.aerout_backups/roblox"
     mkdir -p "$backup_dir"
-
+    
     local settings_dir=$(find ~/Library/Application\ Support/Roblox -name "ClientSettings" -type d 2>/dev/null)
     
     if [ -z "$settings_dir" ]; then
@@ -757,31 +762,18 @@ general_game_boost() {
     killall "Safari" 2>/dev/null
 
     sudo sysctl -w net.inet.tcp.delayed_ack=0 >/dev/null 2>&1
+    sudo sysctl -w net.inet.tcp.mssdflt=1460 >/dev/null 2>&1
 
     sudo pmset -b displaysleep 15
     sudo pmset -b disksleep 0
+    sudo pmset -b sleep 0
+
+    if ! is_apple_silicon; then
+      sudo pmset -a sms 0
+    fi
     
     echo -e "\033[1;32m✅ Games will run better!\033[0m"
-    echo -e "\033[1;33m⚠️ These changes reset after restart\033[0m"
-  else
-    echo -e "\033[1;33m🚫 Cancelled\033[0m"
-  fi
-}
-
-reset_game_settings() {
-  echo -e "\033[1;34m🔄 Resetting game settings...\033[0m"
-  if confirm_action "Reset game settings" "Back to normal"; then
-    local settings_dir=$(find ~/Library/Application\ Support/Roblox -name "ClientSettings" -type d 2>/dev/null)
-    
-    if [ -n "$settings_dir" ]; then
-      rm -f "$settings_dir/ClientAppSettings.json" 2>/dev/null
-    fi
-
-    if [ -f ~/Library/Application\ Support/Steam/steam.cfg.bak ]; then
-      cp ~/Library/Application\ Support/Steam/steam.cfg.bak ~/Library/Application\ Support/Steam/steam.cfg
-    fi
-    
-    echo -e "\033[1;32m✅ Game settings normal!\033[0m"
+    echo -e "\033[1;33m⚠️ Some changes reset after restart\033[0m"
   else
     echo -e "\033[1;33m🚫 Cancelled\033[0m"
   fi
